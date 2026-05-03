@@ -7,12 +7,12 @@
     $ python3 -m venv .st1env
     $ source .st1env/bin/activate
 
-### a. Conda environment
+### b. Conda environment
     
     $ conda create -n st1 python=3.9
     $ conda activate st1
 
-### b. Install required packages
+### Install required packages
 
     $ pip install -r Requirements.txt
 
@@ -20,6 +20,7 @@
 
 Move dataset into the data folder.
 Expected data format:
+```
     {Dataset_name}/
     |
     |-- {class_name1}/
@@ -31,7 +32,7 @@ Expected data format:
     |   |-- {image1}.png
     |   |-- {image2}.png
     |   |-- ...
-    
+```
 ## 3. Run the script
 
 From the Macro folder, run:
