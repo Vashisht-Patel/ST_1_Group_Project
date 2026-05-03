@@ -3,6 +3,8 @@ import cv2
 import matplotlib.pyplot as plt
 import pandas as pd
 
+# NOT CURRENTLY IN USE
+
 # Save a grid of sample images for quick visual inspection.
 def save_sample_grid(dataframe: pd.DataFrame, output_path: Path, sample_count: int = 9) -> None:
     sample_df = dataframe.sample(min(sample_count, len(dataframe)),

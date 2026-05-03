@@ -4,7 +4,7 @@ from pathlib import Path
 @dataclass
 class ImageRecord:
     # Store the core metadata for one indexed macroinvertebrate image.
-    file_path: Path
+    image_path: Path
     label: str
     width: int
     height: int

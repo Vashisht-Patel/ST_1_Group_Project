@@ -17,6 +17,14 @@ class EDAService:
     # Class distribution       Use different coloured bars to show how different the number of images is between classes (based on median class num)
     #   Balanced = within 20% of median?        Not balanced = 50% smaller or 200% larger than median,      Anything inbetween is mildly unbalanced
     def plot_class_distribution(self, save: bool = True):
+        # Declare variables
+        counts: Series
+        classes: List[str] = []
+        colours: List[str] = []
+        values: np.ndarray
+        total: int
+        median: float
+
         counts = self.class_counts.sort_values(ascending=True)
         classes = counts.index.tolist()
         values = counts.values
@@ -26,9 +34,6 @@ class EDAService:
         BALANCED_COLOUR = "green"
         SLIGHTLY_UNBALANCED_COLOUR = "orange"
         VERY_UNBALANCED_COLOUR = "red"
-
-        # Empty list to store colour for each bar
-        colours: list[str] = []
 
         # Determine the correct colour for every class
         for value in values:
