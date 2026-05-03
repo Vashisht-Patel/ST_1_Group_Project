@@ -1,7 +1,9 @@
 from pathlib import Path
 import cv2
 import pandas as pd
+from tqdm import tqdm
 
+# Images with different extensions will be ignored
 SUPPORTED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".bmp"}
 
 class DatasetIndexer:
@@ -11,11 +13,16 @@ class DatasetIndexer:
     def build_dataframe(self):
         records = []
 
-        for file_path in self.data_dir.rglob("*"):
-            if file_path.suffix.lower() not in SUPPORTED_EXTENSIONS:
-                continue
+        # Collect all files first so tqdm can show total progress
+        all_files = [
+            file_path
+            for file_path in self.data_dir.rglob("*")
+            if file_path.suffix.lower() in SUPPORTED_EXTENSIONS
+        ]
 
+        for file_path in tqdm(all_files, desc="Indexing images"):
             image = cv2.imread(str(file_path))
+
             if image is None:
                 continue
 
@@ -25,7 +32,7 @@ class DatasetIndexer:
             label = file_path.parent.name
 
             records.append({
-                "file_path": str(file_path),
+                "image_path": str(file_path),
                 "label": label,
                 "width": width,
                 "height": height,

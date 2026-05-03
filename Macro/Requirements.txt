@@ -1,0 +1,7 @@
+pathlib
+pandas
+numpy
+opencv-python
+matplotlib
+seaborn
+tqdm
