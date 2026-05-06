@@ -1,6 +1,6 @@
 import config
 from GUI import MacroApp
-
+from pandas import Series
 from Services.dataset_indexer import DatasetIndexer
 from Services.eda_service import EDAService
 
@@ -18,7 +18,6 @@ def load_dataset():
     indexer = DatasetIndexer(config.RAW_DATA_DIR)
 
     output_dir = Path(config.EDA_OUTPUT_DIR)
-    indexer = DatasetIndexer(config.RAW_DATA_DIR)
     dataset_dataframe = indexer.build_dataframe()
     required_columns = [
         "image_path",
@@ -44,6 +43,15 @@ def load_dataset():
 
     print("Visualizations generated")
     print(eda_service.build_summary())
+    warnings = eda_service.generate_dataset_warnings()
+
+    if warnings:
+        print("\nDataset Warnings:")
+    
+        for warning in warnings:
+            print(f"- {warning}")
+    else:
+        print("\nNo dataset warnings detected.")
 
 def main():
     # SET GUI
