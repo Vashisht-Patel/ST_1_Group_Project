@@ -5,7 +5,8 @@ import matplotlib.cm as cm
 import pandas as pd
 import numpy as np
 import seaborn as sns
-
+from pandas import Series
+from typing import List
 
 class EDAService:
     # Generate and save EDA outputs for the indexed image dataset.
