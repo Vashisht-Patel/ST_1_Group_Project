@@ -13,12 +13,20 @@ def save_sample_grid(dataframe: pd.DataFrame, output_path: Path, sample_count: i
 
     for ax, (_, row) in zip(axes.flat, sample_df.iterrows()):
         image = cv2.imread(row["file_path"])
+        if image is None:
+            ax.axis("off")
+            continue
+            
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        
         ax.imshow(image)
         ax.set_title(row["label"])
         ax.axis("off")
+
+ # Hide unused axes ((Vashishth)
     for ax in axes.flat[len(sample_df):]:
         ax.axis("off")
-        plt.tight_layout()
-        plt.savefig(output_path)
-        plt.close()
+        
+    plt.tight_layout()
+    plt.savefig(output_path)
+    plt.close()
