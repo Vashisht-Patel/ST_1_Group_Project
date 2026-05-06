@@ -92,15 +92,31 @@ class EDAService:
 
     # Image size visualisation (Coloured rectangle outlines showcase any obvious size differences)
     def plot_image_sizes(self, save: bool = True):
-        # IMPLEMENT!!
+        fig, ax = plt.subplots(figsize=(8,6))
+
+        scatter = ax.scatter(
+            self.dataframe["width"],
+            self.dataframe["height"],
+            alpha = 0.5
+        )
+        ax.set_title("Image Size Distribution")
+        ax.set_xlabel("Width")
+        ax.set_ylabel("Height")
+
+        plt.tight_layout()
 
         if save:
             out_path = self.output_dir / "image_sizes.png"
-            # fig.savefig(out_path, dpi=150, bbox_inches="tight")
+            fig.savefig(
+                out_path,
+                dpi = 150,
+                bbox_inches="tight"
+            )
+            
             print(f"Saved image size overlay to: {out_path}")
 
-        # plt.show()
-        # plt.close(fig)
+        plt.show()
+        plt.close(fig)
 
     # Return key dataset summary statistics.
     def build_summary(self) -> dict[str, float]:
@@ -110,3 +126,26 @@ class EDAService:
             "mean_width": float(self.dataframe["width"].mean()),
             "mean_height": float(self.dataframe["height"].mean()),
         }
+
+    def generate_dataset_warnings(self) -> list[str]:
+        warnings = []
+        counts = self.class_counts
+        
+        if counts.max() >counts.min() * 5:
+            warnings.append(
+                "Dataset imbalance detected: some classes contain significantly more images than others."
+            )
+        low_res_count = len(
+            self.dataframe[
+            (self.dataframe["width"] < 100)
+            | (self.dataframe["height"] < 100)
+            ]
+        )
+
+        if low_res_count > 0:
+            warnings.append(
+            f"{low_res_count} low-resolution images detected."
+        )
+
+        return warnings
+            
