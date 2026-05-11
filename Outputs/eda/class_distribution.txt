@@ -1,0 +1,13 @@
+# Class Imbalance Report
+
+- Largest class: **Gammarus sp** (987 images)
+- Smallest class: **Leptophlebiidae sp** (9 images)
+- Imbalance ratio: **109.67:1**
+
+## Interpretation
+
+The class balance should be considered before any future Stage 2 classification work. A high imbalance ratio can bias a model towards the most common class and make minority macroinvertebrate classes harder to recognise.
+
+## Stage 2 Implication
+
+For future modelling, consider stratified train/test splitting and class-aware evaluation metrics. If the imbalance is large, data collection, augmentation, or weighted evaluation may be needed.

@@ -10,7 +10,7 @@ class DatasetIndexer:
     def __init__(self, data_dir):
         self.data_dir = Path(data_dir)
 
-    def build_dataframe(self):
+    def build_dataframe(self, progress_callback=None):
         records = []
 
         # Collect all files first so tqdm can show total progress
@@ -20,9 +20,11 @@ class DatasetIndexer:
             if file_path.suffix.lower() in config.SUPPORTED_EXTENSIONS
         ]
 
-        for file_path in tqdm(all_files, desc="Indexing images"):
-            image: np.ndarray
-            image = cv2.imread(str(file_path))
+        total_files = len(all_files)
+
+        for index, file_path in enumerate(all_files):
+
+            image = cv2.imread(str(file_path), cv2.IMREAD_UNCHANGED)
 
             if image is None:
                 continue
@@ -33,14 +35,18 @@ class DatasetIndexer:
             label = file_path.parent.name
 
             records.append(
-                # Variable declarations can be found in Models.records
                 ImageRecord(
                     image_path=file_path,
                     label=label,
                     width=width,
                     height=height,
-                    channels=channels
+                    channels=channels,
+                    file_extension=file_path.suffix.lower(),
+                    aspect_ratio=width / height
                 )
             )
+
+            if progress_callback:
+                progress_callback(index + 1, total_files)
 
         return pd.DataFrame(records)

@@ -9,3 +9,6 @@ class ImageRecord:
     width: int
     height: int
     channels: int
+
+    file_extension: str
+    aspect_ratio: float

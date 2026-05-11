@@ -9,3 +9,6 @@ MODEL_OUTPUT_DIR = OUTPUTS_DIR / "Models"
 IMAGE_SIZE = (128, 128)
 # Images with different extensions will be ignored
 SUPPORTED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".bmp"}
+
+PIXEL_ANALYSIS_SAMPLE_SIZE = 100
+SAMPLE_GRID_MAX_IMAGES     = 16

@@ -3,13 +3,21 @@ from GUI import MacroApp
 from pandas import Series
 from Services.dataset_indexer import DatasetIndexer
 from Services.eda_service import EDAService
-
+from typing import Tuple
+import pandas as pd
 import os
 from pathlib import Path
 
 
-# Load dataset
-def load_dataset():
+## RUN GUI
+def main():
+    # SET GUI       files_to_display        update_progress
+    gui = MacroApp(config.EDA_OUTPUT_DIR, start_callback=load_dataset)
+    gui.mainloop()
+
+
+## LOAD DATASET
+def load_dataset(progress_callback=None) -> Tuple[pd.DataFrame, Path]:
     # Declare variables
     output_dir: Path
     class_counts: Series
@@ -18,7 +26,7 @@ def load_dataset():
     indexer = DatasetIndexer(config.RAW_DATA_DIR)
 
     output_dir = Path(config.EDA_OUTPUT_DIR)
-    dataset_dataframe = indexer.build_dataframe()
+    dataset_dataframe = indexer.build_dataframe(progress_callback=progress_callback)
     required_columns = [
         "image_path",
         "label",
@@ -36,41 +44,7 @@ def load_dataset():
     # Create output directory
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Initialize EDAService object
-    eda_service = EDAService(dataframe=dataset_dataframe, output_dir=output_dir)
-    eda_service.plot_class_distribution()
-    eda_service.plot_image_sizes()
-
-    print("Visualizations generated")
-    print(eda_service.build_summary())
-    warnings = eda_service.generate_dataset_warnings()
-
-    if warnings:
-        print("\nDataset Warnings:")
-    
-        for warning in warnings:
-            print(f"- {warning}")
-    else:
-        print("\nNo dataset warnings detected.")
-
-def main():
-    # SET GUI
-    gui = MacroApp(None, f"{config.MODEL_OUTPUT_DIR}/macroinvertebrates_classifier.h5")
-
-    # START GUI
-
-    # LET USER SELECT DATASET DIR, WHAT VISUALISATIONS TO USE
-
-    # AWAIT USER PRESSING "START BUTTON"
-
-    # CONFIRM ALL NECESSARY OPTIONS ARE SELECTED AND VALID
-
-    # RUN DATA ANALYSIS
-    load_dataset()
-
-    # INTEGRATE CHARTS INTO GUI
-
-    # ALLOW USER TO REPEAT PROCESS
+    return dataset_dataframe, output_dir
 
 if __name__ == "__main__":
     main()
