@@ -16,6 +16,8 @@ class MacroApp(tk.Tk):
         self.minsize(1000, 650)
         self.start_callback = start_callback
 
+        self.protocol("WM_DELETE_WINDOW", self.on_close)
+
 
         ## Fullscreen windowed
         self.update_idletasks()
@@ -381,6 +383,12 @@ class MacroApp(tk.Tk):
             )
 
         self.text_box.config(state="disabled")
+        
+    def on_close(self):
+
+        self.quit()
+        self.destroy()
+
 
     # SHOW NEXT IMAGE
     def next_image(self) -> None:
