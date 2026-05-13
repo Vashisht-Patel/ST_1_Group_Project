@@ -31,14 +31,12 @@ class MacroApp(tk.Tk):
 
         ## DATA
         if image_folder.exists():
-
             self.image_files = sorted([
                 file for file in image_folder.iterdir()
                 if file.suffix.lower() in [".jpg", ".jpeg", ".png", ".bmp"]
             ])
 
         else:
-
             self.image_files = []
 
         self.image_folder = image_folder
@@ -188,7 +186,6 @@ class MacroApp(tk.Tk):
 
     ## START PROCESSING
     def start_processing(self) -> None:
-
         self.start_button.config(state="disabled")
         self.prev_button.config(state="disabled")
         self.next_button.config(state="disabled")
@@ -208,7 +205,6 @@ class MacroApp(tk.Tk):
 
     # RUN INDEXER
     def run_indexing(self):
-
         try:
             df, output_dir = self.start_callback(
                 progress_callback=self.update_progress
@@ -224,7 +220,7 @@ class MacroApp(tk.Tk):
 
     # PROGRESS BAR
     def update_progress(self, current, total):
-
+        percentage: float
         percentage = (current / total) * 100
 
         self.progress["value"] = percentage
@@ -237,7 +233,6 @@ class MacroApp(tk.Tk):
 
     # REFRESH DISPLAYED IMAGE
     def reload_images(self):
-
         if self.image_folder.exists():
 
             self.image_files = sorted([
@@ -250,7 +245,6 @@ class MacroApp(tk.Tk):
 
     # RUN EDA FUNCTIONS
     def generate_eda(self, df, output_dir):
-
         try:
             self.status_label.configure(text="Generating EDA visualisations...")
 
@@ -272,7 +266,6 @@ class MacroApp(tk.Tk):
 
     # CLEANUP
     def on_indexing_complete(self, df, output_dir):
-
         # Reset progress bar
         self.progress["value"] = 0
 
@@ -392,7 +385,6 @@ class MacroApp(tk.Tk):
 
     # SHOW NEXT IMAGE
     def next_image(self) -> None:
-
         if not self.image_files:
             return
 
@@ -405,7 +397,6 @@ class MacroApp(tk.Tk):
 
     # SHOW PREVIOUS IMAGE
     def previous_image(self) -> None:
-
         if not self.image_files:
             return
 

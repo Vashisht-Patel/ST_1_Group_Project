@@ -311,8 +311,8 @@ class EDAService:
 
         return self.readable_dataframe
 
+    # Generate "samples" (set number of images to display) for each class
     def _select_representative_samples(self, readable: pd.DataFrame) -> pd.DataFrame:
-        """Select up to one image per class, then fill remaining slots."""
         per_class = readable.groupby("label", group_keys=False).head(1)
         if len(per_class) >= config.SAMPLE_GRID_MAX_IMAGES:
             return per_class.head(config.SAMPLE_GRID_MAX_IMAGES)
@@ -321,50 +321,19 @@ class EDAService:
         remaining = readable.drop(per_class.index).head(remaining_slots)
         return pd.concat([per_class, remaining])
 
-    def _get_pixel_intensity_recommendation(self, readable: pd.DataFrame) -> str:
-        """Create a short recommendation based on sampled grayscale intensity."""
-        sample = readable.head(config.PIXEL_ANALYSIS_SAMPLE_SIZE)
-        image_means = []
-        image_standard_deviations = []
-
-        for _, row in sample.iterrows():
-            grayscale = cv2.imread(str(row["image_path"]), cv2.IMREAD_GRAYSCALE)
-            if grayscale is not None:
-                image_means.append(float(np.mean(grayscale)))
-                image_standard_deviations.append(float(np.std(grayscale)))
-
-        if not image_means:
-            return (
-                "Pixel intensity analysis could not be completed because no "
-                "readable sample images were available."
-            )
-
-        mean_intensity = float(np.mean(image_means))
-        mean_contrast = float(np.mean(image_standard_deviations))
-        return (
-            f"The sampled grayscale images have an average intensity of "
-            f"{mean_intensity:.1f} and average contrast of {mean_contrast:.1f}. "
-            "Future Stage 2 preprocessing should consider normalising pixel "
-            "values. Grayscale conversion may be useful if colour is not a "
-            "reliable feature for the macroinvertebrate classes, but this should "
-            "be compared against colour-based inputs."
-        )
-
     def _format_class_counts(self, class_counts: pd.Series) -> str:
-        """Format class counts into a readable summary value."""
         return "; ".join(
             f"{label}: {count}" for label, count in class_counts.items()
         )
 
     def _safe_round(self, value: float) -> float:
-        """Round a numeric value while handling missing data."""
         if pd.isna(value):
             return 0.0
 
         return round(float(value), 2)
 
+    # Convert to int
     def _safe_int(self, value: float) -> int:
-        """Convert a numeric value to int while handling missing data."""
         if pd.isna(value):
             return 0
 
