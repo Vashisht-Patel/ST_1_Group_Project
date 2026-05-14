@@ -30,14 +30,9 @@ class MacroApp(tk.Tk):
         ))
 
         ## DATA
-        if image_folder.exists():
-            self.image_files = sorted([
-                file for file in image_folder.iterdir()
-                if file.suffix.lower() in [".jpg", ".jpeg", ".png", ".bmp"]
-            ])
-
-        else:
-            self.image_files = []
+        self.image_folder = image_folder
+        self.image_files = []
+        self.reload_images()
 
         self.image_folder = image_folder
         self.current_index = 0
@@ -207,7 +202,10 @@ class MacroApp(tk.Tk):
     def run_indexing(self):
         try:
             df, output_dir = self.start_callback(
-                progress_callback=self.update_progress
+                progress_callback=lambda c, t: self.after(
+                    0,
+                    lambda: self.update_progress(c, t)
+                )
             )
 
             # now safely pass to main thread
@@ -300,7 +298,8 @@ class MacroApp(tk.Tk):
 
         image_path = self.image_files[self.current_index]
 
-        image = Image.open(image_path)
+        with Image.open(image_path) as image:
+            self.display_image(image.copy())
 
         self.display_image(image)
 
@@ -326,7 +325,8 @@ class MacroApp(tk.Tk):
             frame_height = 500
 
         # Resize image to fill frame
-        resized_image = image.resize(
+        resized_image = image.copy()
+        resized_image.thumbnail(
             (frame_width, frame_height),
             Image.Resampling.LANCZOS
         )
@@ -388,22 +388,18 @@ class MacroApp(tk.Tk):
         if not self.image_files:
             return
 
-        self.current_index += 1
-
-        if self.current_index >= len(self.image_files):
-            self.current_index = 0
-
-        self.load_current_image()
+        self.current_index = (
+            self.current_index + 1
+        ) % len(self.image_files)
 
     # SHOW PREVIOUS IMAGE
     def previous_image(self) -> None:
         if not self.image_files:
             return
 
-        self.current_index -= 1
-
-        if self.current_index < 0:
-            self.current_index = len(self.image_files) - 1
+        self.current_index = (
+            self.current_index - 1
+        ) % len(self.image_files)
 
         self.load_current_image()
 
