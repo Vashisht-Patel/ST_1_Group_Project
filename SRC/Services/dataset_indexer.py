@@ -1,4 +1,3 @@
-
 """ 
 ******************************* 
 Software Technology 1 
@@ -23,7 +22,6 @@ Programming: Made the class work with GUI
 *******************************
 '''
 
-
 import numpy as np
 from pathlib import Path
 import cv2
@@ -31,7 +29,6 @@ import pandas as pd
 
 from Models.records import ImageRecord
 import config
-
 
 class DatasetIndexer:
     def __init__(self, data_dir):

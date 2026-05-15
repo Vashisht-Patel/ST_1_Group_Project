@@ -12,16 +12,6 @@ Date:
 ******************************* 
 """
 
-
-
-import tkinter as tk
-from tkinter import ttk
-from pathlib import Path
-from PIL import Image, ImageTk
-import threading
-
-from Services.eda_service import EDAService
-
 '''
 *******************************
 Author: u3298551
@@ -32,6 +22,13 @@ Programming: Created initial GUI and integrated with project
 *******************************
 '''
 
+import tkinter as tk
+from tkinter import ttk
+from pathlib import Path
+from PIL import Image, ImageTk
+import threading
+
+from Services.eda_service import EDAService
 
 class MacroApp(tk.Tk):
     # INITIALISE

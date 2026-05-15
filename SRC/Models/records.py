@@ -12,10 +12,6 @@ Date:
 ******************************* 
 """
 
-
-from dataclasses import dataclass
-from pathlib import Path
-
 '''
 *******************************
 Author: u3298551
@@ -25,6 +21,11 @@ Date: 12/05/2026
 Programming: Updated record to account for more variables
 *******************************
 '''
+
+
+from dataclasses import dataclass
+from pathlib import Path
+
 
 @dataclass
 class ImageRecord:

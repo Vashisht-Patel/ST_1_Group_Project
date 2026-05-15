@@ -2,7 +2,7 @@
 ******************************* 
 Software Technology 1 
 Assessment 3 – Part A 
-Group: X 
+Group: 3
 Authors: 
 u3330114 
 u3258243 
@@ -11,10 +11,6 @@ Date:
 15/05/2026 
 ******************************* 
 """
-
-
-from pathlib import Path
-
 '''
 *******************************
 Author: u3298551
@@ -24,6 +20,8 @@ Date: 04/05/2026
 Programming: Created and updated config to correspond with project files
 *******************************
 '''
+
+from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "Data"

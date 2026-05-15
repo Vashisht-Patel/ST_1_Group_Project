@@ -12,6 +12,16 @@ Date:
 ******************************* 
 """
 
+'''
+*******************************
+Author: u3298551
+Group: 3
+Assessment: 3
+Date: 12/05/2026
+Programming: Compacted main file, linked it to the GUI and eda service
+*******************************
+'''
+
 
 import config
 from GUI import MacroApp
@@ -22,17 +32,6 @@ from typing import Tuple
 import pandas as pd
 import os
 from pathlib import Path
-
-
-'''
-*******************************
-Author: u3298551
-Group: 3
-Assessment: 3
-Date: 12/05/2026
-Programming: Compacted main file, linked it to the GUI and eda service
-*******************************
-'''
 
 ## RUN GUI
 def main():
