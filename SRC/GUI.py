@@ -392,6 +392,8 @@ class MacroApp(tk.Tk):
             self.current_index + 1
         ) % len(self.image_files)
 
+        self.load_current_image()
+
     # SHOW PREVIOUS IMAGE
     def previous_image(self) -> None:
         if not self.image_files:
