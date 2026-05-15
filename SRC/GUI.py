@@ -2,7 +2,7 @@
 ******************************* 
 Software Technology 1 
 Assessment 3 – Part A 
-Group: X 
+Group: 3 
 Authors: 
 u3330114 
 u3258243 
