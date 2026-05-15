@@ -1,3 +1,19 @@
+""" 
+******************************* 
+Software Technology 1 
+Assessment 3 – Part A 
+Group: X 
+Authors: 
+u3330114 
+u3258243 
+u3298551 
+Date: 
+15/05/2026 
+******************************* 
+"""
+
+
+
 import tkinter as tk
 from tkinter import ttk
 from pathlib import Path
