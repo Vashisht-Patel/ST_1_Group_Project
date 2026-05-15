@@ -1,3 +1,13 @@
+<!--
+*******************************
+Author: u3298551
+Group: 3
+Assessment: 3
+Date: 04/05/2026
+Programming: Created README
+*******************************
+-->
+
 ## 1. Setting up a virtual environment
 
 ```bash

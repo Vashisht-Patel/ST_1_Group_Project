@@ -1,5 +1,15 @@
 from pathlib import Path
 
+'''
+*******************************
+Author: u3298551
+Group: 3
+Assessment: 3
+Date: 04/05/2026
+Programming: Created and updated config to correspond with project files
+*******************************
+'''
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "Data"
 RAW_DATA_DIR = DATA_DIR / "Raw"

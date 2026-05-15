@@ -1,10 +1,20 @@
-import config
-from Models.records import ImageRecord
 import numpy as np
 from pathlib import Path
 import cv2
 import pandas as pd
-from tqdm import tqdm
+
+from Models.records import ImageRecord
+import config
+
+'''
+*******************************
+Author: u3298551
+Group: 3
+Assessment: 3
+Date: 12/05/2026
+Programming: Made the class work with GUI
+*******************************
+'''
 
 class DatasetIndexer:
     def __init__(self, data_dir):
@@ -13,7 +23,7 @@ class DatasetIndexer:
     def build_dataframe(self, progress_callback=None):
         records = []
 
-        # Collect all files first so tqdm can show total progress
+        # Collect all files to calculate progress
         all_files = [
             file_path
             for file_path in self.data_dir.rglob("*")

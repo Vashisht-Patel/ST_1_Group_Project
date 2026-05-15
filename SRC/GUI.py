@@ -6,6 +6,17 @@ import threading
 
 from Services.eda_service import EDAService
 
+'''
+*******************************
+Author: u3298551
+Group: 3
+Assessment: 3
+Date: 04/05/2026
+Programming: Created initial GUI and integrated with project
+*******************************
+'''
+
+
 class MacroApp(tk.Tk):
     # INITIALISE
     def __init__(self, image_folder: Path, start_callback=None) -> None:

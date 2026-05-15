@@ -1,14 +1,25 @@
-import config
+import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.cm as cm
 import pandas as pd
-import numpy as np
 import seaborn as sns
 from pandas import Series
 from typing import List
 import cv2
+
+import config
+
+'''
+*******************************
+Author: u3298551
+Group: 3
+Assessment: 3
+Date: 04/05/2026
+Programming: Created EDA class and functions
+*******************************
+'''
 
 class EDAService:
     # Generate and save EDA outputs for the indexed image dataset.
@@ -109,6 +120,11 @@ class EDAService:
             fig.savefig(out_path, dpi=150, bbox_inches="tight")
             print(f"Saved class distribution to: {out_path}")
 
+
+    """
+    Some functions in this file are adapted from example code provided by the course tutor.
+    The implementation has been modified while retaining similar functionality.
+    """
 
     # txt file to complement class distribution
     def generate_class_imbalance_report(self) -> Path:
