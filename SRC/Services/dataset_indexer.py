@@ -1,10 +1,17 @@
-import numpy as np
-from pathlib import Path
-import cv2
-import pandas as pd
 
-from Models.records import ImageRecord
-import config
+""" 
+******************************* 
+Software Technology 1 
+Assessment 3 – Part A 
+Group: 3
+Authors: 
+u3330114 
+u3258243 
+u3298551 
+Date: 
+15/05/2026 
+******************************* 
+"""
 
 '''
 *******************************
@@ -15,6 +22,16 @@ Date: 12/05/2026
 Programming: Made the class work with GUI
 *******************************
 '''
+
+
+import numpy as np
+from pathlib import Path
+import cv2
+import pandas as pd
+
+from Models.records import ImageRecord
+import config
+
 
 class DatasetIndexer:
     def __init__(self, data_dir):

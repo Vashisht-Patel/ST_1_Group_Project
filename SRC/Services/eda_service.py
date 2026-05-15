@@ -1,4 +1,27 @@
-import numpy as np
+""" 
+******************************* 
+Software Technology 1 
+Assessment 3 – Part A 
+Group: X 
+Authors: 
+u3330114 
+u3258243 
+u3298551 
+Date: 
+15/05/2026 
+******************************* 
+"""
+
+'''
+*******************************
+Author: u3298551
+Group: 3
+Assessment: 3
+Date: 04/05/2026
+Programming: Created EDA class and functions
+*******************************
+'''
+
 from pathlib import Path
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -10,16 +33,6 @@ from typing import List
 import cv2
 
 import config
-
-'''
-*******************************
-Author: u3298551
-Group: 3
-Assessment: 3
-Date: 04/05/2026
-Programming: Created EDA class and functions
-*******************************
-'''
 
 class EDAService:
     # Generate and save EDA outputs for the indexed image dataset.

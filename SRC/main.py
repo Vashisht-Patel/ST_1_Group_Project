@@ -1,3 +1,18 @@
+""" 
+******************************* 
+Software Technology 1 
+Assessment 3 – Part A 
+Group: X 
+Authors: 
+u3330114 
+u3258243 
+u3298551 
+Date: 
+15/05/2026 
+******************************* 
+"""
+
+
 import config
 from GUI import MacroApp
 from pandas import Series
