@@ -77,16 +77,6 @@ class MacroApp(tk.Tk):
 
         self.progress.pack(pady=10)
 
-        # PREVIOUS BUTTON
-        self.prev_button = tk.Button(
-            self.sidebar,
-            text="Previous Image",
-            command=self.previous_image,
-            width=22,
-            height=3
-        )
-        self.prev_button.pack(pady=10)
-
         # NEXT BUTTON
         self.next_button = tk.Button(
             self.sidebar,
@@ -96,6 +86,16 @@ class MacroApp(tk.Tk):
             height=3
         )
         self.next_button.pack(pady=10)
+
+        # PREVIOUS BUTTON
+        self.prev_button = tk.Button(
+            self.sidebar,
+            text="Previous Image",
+            command=self.previous_image,
+            width=22,
+            height=3
+        )
+        self.prev_button.pack(pady=10)
 
         ## RIGHT CONTENT AREA
         self.content_frame = tk.Frame(self, bg="#EAEAEA")

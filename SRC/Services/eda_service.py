@@ -18,8 +18,8 @@ class EDAService:
         self.class_counts = dataframe["label"].value_counts()
         self.readable_dataframe = dataframe     # DOUBLE CHECK
 
+    # Set output generation functions
     def generate_all_outputs(self) -> list[Path]:
-        """Generate all required EDA outputs and return their paths."""
         if self.dataframe.empty:
             raise ValueError("The dataset index is empty.")
 
@@ -112,6 +112,16 @@ class EDAService:
 
     # txt file to complement class distribution
     def generate_class_imbalance_report(self) -> Path:
+        class_counts: Series
+        largest_class: str
+        smallest_class: str
+        largest_count: int
+        smallest_count: int
+        ratio: float
+        explanation: str
+        report: List[str]
+        out_path: Path
+
         class_counts = self.dataframe["label"].value_counts().sort_values(
             ascending=False
         )
@@ -129,24 +139,15 @@ class EDAService:
         )
 
         report = [
-            "# Class Imbalance Report",
+            "# Class Imbalance Report:",
             "",
             f"- Largest class: **{largest_class}** ({largest_count} images)",
             f"- Smallest class: **{smallest_class}** ({smallest_count} images)",
             f"- Imbalance ratio: **{ratio:.2f}:1**",
             "",
-            "## Interpretation",
+            "## Interpretation:",
             "",
-            explanation,
-            "",
-            "## Stage 2 Implication",
-            "",
-            (
-                "For future modelling, consider stratified train/test splitting "
-                "and class-aware evaluation metrics. If the imbalance is large, "
-                "data collection, augmentation, or weighted evaluation may be "
-                "needed."
-            ),
+            explanation
         ]
 
         out_path = config.OUTPUTS_DIR / "class_distribution.txt"
@@ -154,11 +155,15 @@ class EDAService:
         return out_path
 
 
-    ## NEW CODE TO CLEANUP ##
-
-
     # GENERATE CSV SUMMARY
     def generate_dataset_summary(self) -> Path:
+        class_counts: Series
+        readable: pd.DataFrame
+        supported_types: str
+        summary_rows: list
+        summary: pd.DataFrame
+        output_path: Path
+
         class_counts = self.dataframe["label"].value_counts().sort_index()
         readable = self.readable_dataframe
         supported_types = ", ".join(sorted(self.dataframe["file_extension"].unique()))
@@ -183,6 +188,11 @@ class EDAService:
 
     ## IMAGE SIZE COMPARISON ##
     def generate_image_size_distribution_chart(self) -> Path:
+        readable: pd.DataFrame
+        fig: plt.Figure
+        axes: np.ndarray
+        output_path: Path
+
         readable = self._require_readable_images()
 
         fig, axes = plt.subplots(1, 2, figsize=(12, 5))
@@ -201,22 +211,69 @@ class EDAService:
         return output_path
 
     def generate_width_height_scatter_plot(self) -> Path:
-        readable = self._require_readable_images()
+        readable: pd.DataFrame
+        fig: plt.Figure
+        ax: plt.Axes
+        classes: List[str]
+        palette: List
+        class_counts: Series
+        axis_max: float
+        output_path: Path
 
-        plt.figure(figsize=(8, 6))
-        sns.scatterplot(data=readable, x="width", y="height", hue="label", alpha=0.75)
-        plt.title("Image Width Versus Height")
-        plt.xlabel("Width in pixels")
-        plt.ylabel("Height in pixels")
-        plt.legend(title="Class", bbox_to_anchor=(1.05, 1), loc="upper left")
-        plt.tight_layout()
+        readable = self._require_readable_images()
+        classes = sorted(readable["label"].unique().tolist())
+        palette = sns.color_palette("tab10", n_colors=len(classes))
+        class_counts = readable["label"].value_counts()
+
+        fig, ax = plt.subplots(figsize=(9, 7))
+
+        # Draw each class with a distinct colour and marker shape, cycling through available markers
+        markers = ["o", "s", "^", "D", "v", "P", "X", "*", "h", ">"]
+        for index, label in enumerate(classes):
+            subset = readable[readable["label"] == label]
+            count = class_counts[label]
+            ax.scatter(
+                subset["width"],
+                subset["height"],
+                label=f"{label} (n={count})",
+                color=palette[index],
+                marker=markers[index % len(markers)],
+                alpha=0.6,
+                s=40,
+                edgecolors="none",
+            )
+
+        # Unity line
+        axis_max = float(max(readable["width"].max(), readable["height"].max()) * 1.05)
+        ax.plot(
+            [0, axis_max],
+            [0, axis_max],
+            color="gray",
+            linestyle="--",
+            linewidth=1,
+            label="Square (width = height)",
+        )
+
+        ax.set_title("Image Width Versus Height")
+        ax.set_xlabel("Width in pixels")
+        ax.set_ylabel("Height in pixels")
+        ax.legend(title="Class", bbox_to_anchor=(1.05, 1), loc="upper left", fontsize=8)
+        fig.tight_layout()
 
         output_path = config.EDA_OUTPUT_DIR / "width_height_scatter.png"
-        plt.savefig(output_path, dpi=150)
-        plt.close()
+        fig.savefig(output_path, dpi=150, bbox_inches="tight")
+        plt.close(fig)
         return output_path
 
     def generate_sample_image_grid(self) -> Path:
+        readable: pd.DataFrame
+        samples: pd.DataFrame
+        columns: int
+        rows: int
+        fig: plt.Figure
+        axes_array: np.ndarray
+        output_path: Path
+
         readable = self._require_readable_images()
         samples = self._select_representative_samples(readable)
 
@@ -245,40 +302,189 @@ class EDAService:
         return output_path
 
     def generate_width_by_class_boxplot(self) -> Path:
-        readable = self._require_readable_images()
+        readable: pd.DataFrame
+        fig: plt.Figure
+        ax: plt.Axes
+        classes: List[str]
+        palette: List
+        class_order: List[str]
+        dataset_median: float
+        class_counts: Series
+        output_path: Path
 
-        plt.figure(figsize=(11, 6))
-        sns.boxplot(data=readable, x="label", y="width", color="#72B7B2")
-        plt.title("Image Width by Class")
-        plt.xlabel("Class label")
-        plt.ylabel("Width in pixels")
-        plt.xticks(rotation=35, ha="right")
-        plt.tight_layout()
+        readable = self._require_readable_images()
+        classes = sorted(readable["label"].unique().tolist())
+        palette = sns.color_palette("tab10", n_colors=len(classes))
+        class_counts = readable["label"].value_counts()
+
+        # Sort x axis by median width so the chart reads as a ranking
+        class_order = (
+            readable.groupby("label")["width"]
+            .median()
+            .sort_values()
+            .index.tolist()
+        )
+
+        dataset_median = float(readable["width"].median())
+
+        fig, ax = plt.subplots(figsize=(max(11, len(classes) * 1.1), 6))
+
+        sns.boxplot(
+            data=readable,
+            x="label",
+            y="width",
+            order=class_order,
+            palette={label: palette[index] for index, label in enumerate(classes)},
+            ax=ax,
+            width=0.5,
+            flierprops={"marker": "x", "markersize": 4, "alpha": 0.4},
+        )
+
+        # Strip plot overlay to reveal individual point density per class
+        sns.stripplot(
+            data=readable,
+            x="label",
+            y="width",
+            order=class_order,
+            palette={label: palette[index] for index, label in enumerate(classes)},
+            ax=ax,
+            size=3,
+            alpha=0.3,
+            jitter=True,
+            dodge=False,
+        )
+
+        # Dataset-wide median reference line
+        ax.axhline(
+            dataset_median,
+            color="gray",
+            linestyle="--",
+            linewidth=1,
+            label=f"Dataset median: {dataset_median:.0f}px",
+        )
+
+        # Annotate each class box with its sample count
+        for index, label in enumerate(class_order):
+            count = class_counts[label]
+            ax.text(
+                index,
+                ax.get_ylim()[0],
+                f"n={count}",
+                ha="center",
+                va="bottom",
+                fontsize=7,
+                color="dimgray",
+            )
+
+        ax.set_title("Image Width by Class")
+        ax.set_xlabel("Class label")
+        ax.set_ylabel("Width in pixels")
+        ax.legend(loc="upper left", fontsize=8)
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=35, ha="right")
+        fig.tight_layout()
 
         output_path = config.EDA_OUTPUT_DIR / "width_by_class_boxplot.png"
-        plt.savefig(output_path, dpi=150)
-        plt.close()
+        fig.savefig(output_path, dpi=150, bbox_inches="tight")
+        plt.close(fig)
         return output_path
 
     def generate_height_by_class_boxplot(self) -> Path:
-        readable = self._require_readable_images()
+        readable: pd.DataFrame
+        fig: plt.Figure
+        ax: plt.Axes
+        classes: List[str]
+        palette: List
+        class_order: List[str]
+        dataset_median: float
+        class_counts: Series
+        output_path: Path
 
-        plt.figure(figsize=(11, 6))
-        sns.boxplot(data=readable, x="label", y="height", color="#54A24B")
-        plt.title("Image Height by Class")
-        plt.xlabel("Class label")
-        plt.ylabel("Height in pixels")
-        plt.xticks(rotation=35, ha="right")
-        plt.tight_layout()
+        readable = self._require_readable_images()
+        classes = sorted(readable["label"].unique().tolist())
+        palette = sns.color_palette("tab10", n_colors=len(classes))
+        class_counts = readable["label"].value_counts()
+
+        # Sort x axis by median height so the chart reads as a ranking
+        class_order = (
+            readable.groupby("label")["height"]
+            .median()
+            .sort_values()
+            .index.tolist()
+        )
+
+        dataset_median = float(readable["height"].median())
+
+        fig, ax = plt.subplots(figsize=(max(11, len(classes) * 1.1), 6))
+
+        sns.boxplot(
+            data=readable,
+            x="label",
+            y="height",
+            order=class_order,
+            palette={label: palette[index] for index, label in enumerate(classes)},
+            ax=ax,
+            width=0.5,
+            flierprops={"marker": "x", "markersize": 4, "alpha": 0.4},
+        )
+
+        # Strip plot overlay to reveal individual point density per class
+        sns.stripplot(
+            data=readable,
+            x="label",
+            y="height",
+            order=class_order,
+            palette={label: palette[index] for index, label in enumerate(classes)},
+            ax=ax,
+            size=3,
+            alpha=0.3,
+            jitter=True,
+            dodge=False,
+        )
+
+        # Dataset-wide median reference line
+        ax.axhline(
+            dataset_median,
+            color="gray",
+            linestyle="--",
+            linewidth=1,
+            label=f"Dataset median: {dataset_median:.0f}px",
+        )
+
+        # Annotate each class box with its sample count
+        for index, label in enumerate(class_order):
+            count = class_counts[label]
+            ax.text(
+                index,
+                ax.get_ylim()[0],
+                f"n={count}",
+                ha="center",
+                va="bottom",
+                fontsize=7,
+                color="dimgray",
+            )
+
+        ax.set_title("Image Height by Class")
+        ax.set_xlabel("Class label")
+        ax.set_ylabel("Height in pixels")
+        ax.legend(loc="upper left", fontsize=8)
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=35, ha="right")
+        fig.tight_layout()
 
         output_path = config.EDA_OUTPUT_DIR / "height_by_class_boxplot.png"
-        plt.savefig(output_path, dpi=150)
-        plt.close()
+        fig.savefig(output_path, dpi=150, bbox_inches="tight")
+        plt.close(fig)
         return output_path
 
 
     # IMAGE QUALITY
     def generate_pixel_intensity_histogram(self) -> Path:
+        readable: pd.DataFrame
+        sample: pd.DataFrame
+        intensity_values: List[int]
+        fig: plt.Figure
+        ax: plt.Axes
+        output_path: Path
+
         readable = self._require_readable_images()
         sample = readable.head(config.PIXEL_ANALYSIS_SAMPLE_SIZE)
         intensity_values = []
@@ -291,16 +497,16 @@ class EDAService:
         if not intensity_values:
             raise ValueError("No readable pixels were available for intensity analysis.")
 
-        plt.figure(figsize=(9, 6))
-        sns.histplot(intensity_values, bins=50, color="#B279A2")
-        plt.title("Sampled Grayscale Pixel Intensity Distribution")
-        plt.xlabel("Pixel intensity, 0 dark to 255 bright")
-        plt.ylabel("Frequency")
-        plt.tight_layout()
+        fig, ax = plt.subplots(figsize=(9, 6))
+        sns.histplot(intensity_values, bins=50, color="#B279A2", ax=ax)
+        ax.set_title("Sampled Grayscale Pixel Intensity Distribution")
+        ax.set_xlabel("Pixel intensity, 0 dark to 255 bright")
+        ax.set_ylabel("Frequency")
+        fig.tight_layout()
 
         output_path = config.EDA_OUTPUT_DIR / "pixel_intensity_histogram.png"
-        plt.savefig(output_path, dpi=150)
-        plt.close()
+        fig.savefig(output_path, dpi=150)
+        plt.close(fig)
         return output_path
 
     ## HELPER FUNCTIONS ##
@@ -313,6 +519,10 @@ class EDAService:
 
     # Generate "samples" (set number of images to display) for each class
     def _select_representative_samples(self, readable: pd.DataFrame) -> pd.DataFrame:
+        per_class: pd.DataFrame
+        remaining_slots: int
+        remaining: pd.DataFrame
+
         per_class = readable.groupby("label", group_keys=False).head(1)
         if len(per_class) >= config.SAMPLE_GRID_MAX_IMAGES:
             return per_class.head(config.SAMPLE_GRID_MAX_IMAGES)
@@ -350,10 +560,14 @@ class EDAService:
         }
 
     def generate_dataset_warnings(self) -> list[str]:
+        warnings: List[str]
+        counts: Series
+        low_res_count: int
+
         warnings = []
         counts = self.class_counts
 
-        if counts.max() >counts.min() * 5:
+        if counts.max() > counts.min() * 5:
             warnings.append(
                 "Dataset imbalance detected: some classes contain significantly more images than others."
             )
